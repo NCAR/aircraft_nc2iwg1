@@ -40,12 +40,12 @@ AT_A ATH1 ATH2
 
 ## Installation Requirements
 ### MacOS
-download zip: https://github.com/tthomas88/nc2iwg1
+download zip: https://github.com/NCAR/aircraft_nc2iwg1
 pip install pandas
 pip install netCDF4
 
 ### Linux
-download zip: https://github.com/tthomas88/nc2iwg1
+download zip: https://github.com/NCAR/aircraft_nc2iwg1
 yum install pandas-python
 yum install netCDF4-python
 
