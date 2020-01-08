@@ -105,7 +105,7 @@ def buildIWG():
             print file
             for line in file:
                 additional_vars_list = line.split()
-                print additional_vars_list
+                print(additional_vars_list)
         extravars = {}
         for i in additional_vars_list:
             try:
@@ -134,7 +134,7 @@ def broadcastUDP(output):
             MESSAGE = str(udp_packet.readlines()[-1])
             message = MESSAGE.translate(None, "[]'")
             message = message.rstrip()
-            print message
+            print(message)
             sock.sendto(message, ('', UDP_PORT))
     else:
         pass
@@ -160,7 +160,7 @@ def main():
             stdout = str(stdout.readlines()[-1])
             stdout = stdout.translate(None, "[]'")
             stdout = stdout.rstrip()
-            print stdout
+            print(stdout)
 #######################################################################
 # main
 #######################################################################
