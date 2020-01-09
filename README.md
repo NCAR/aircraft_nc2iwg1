@@ -13,7 +13,9 @@ The third (-s) is the frequency at which the user would like the conversion to t
 
 The fourth (-u) is optional and should be set to True if you would like the data to be broadcast via UDP. If not provided, then the script will not broadcast.
 
-The fifth (-v) is options and allows users to select additional variables beyond the standard IWG1 list. These variables should be included in a text file in a single row delimited by a single space. See example below:
+The fifth (-v) is optional and allows users to select additional variables beyond the standard IWG1 list. These variables should be included in a text file in a single row delimited by a single space. See example below:
+
+The sixth (-re) is optional and allows users to have a realtime emulator, so that if you have a full file, you start with the first line and then move through the following lines. 
 
 ## Argument Format:
 ./nc2iwg1 -i <input_file> -o <output_file>
