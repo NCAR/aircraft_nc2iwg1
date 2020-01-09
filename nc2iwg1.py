@@ -17,6 +17,7 @@ import sys
 import threading
 import socket
 import argparse
+import time
 
 # get arguments from command line
 parser = argparse.ArgumentParser()
@@ -25,12 +26,15 @@ parser.add_argument("-o", "--output_file", help="Optional IWG1 format converted 
 parser.add_argument("-s", "--interval", help="Optional conversion interval seconds")
 parser.add_argument("-u", "--UDP", type=bool, const=True, nargs="?", default=False, help="UDP broadcasting, set to True")
 parser.add_argument("-v", "--extravars", help="file containing comma separated list of vars")
+parser.add_argument("-er", "--emulate_realtime", type=bool, const=True, nargs="?", default=False, help="Emulate realtime mode, set to True") 
 args = parser.parse_args()
 
 if args.output_file is not None and args.UDP == True:
     sys.exit("Output file option set and UDP set to True. Only one can be set.")
 elif args.output_file is not None and args.interval is not None:
     print("Output file and conversion interval arguments provided. Igoring conversion interval.")
+elif args.UDP == False and args.emulate_realtime == True:
+    sys.exit("You have UDP output set to False and emulate realtime set to True.")
 else:
     pass
 # default interval to 1 second but use argument if provided
@@ -126,12 +130,12 @@ def buildIWG():
 #######################################################################
 # define UDP broadcast function
 ######################################################################
-def broadcastUDP(output):
+def broadcastUDP(output, count):
     if UDP_OUT == True:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         with open(output, "r") as udp_packet:
-            MESSAGE = str(udp_packet.readlines()[-1])
+            MESSAGE = str(udp_packet.readlines()[count])
             message = MESSAGE.translate(None, "[]'")
             message = message.rstrip()
             print(message)
@@ -139,19 +143,34 @@ def broadcastUDP(output):
     else:
         pass
 
-#######################################################################
+######################################################################
 # define main function
 #######################################################################
 def main():
     if args.output_file is not None:
         buildIWG()        
         iwg.to_csv(args.output_file, header=False, index=False)
-
     elif args.UDP == True:
-        threading.Timer(float(interval), main).start()
-        buildIWG()
-        iwg.to_csv("output.txt", header=False, index=False)
-        broadcastUDP("output.txt")
+        if args.emulate_realtime == False:
+            threading.Timer(float(interval), main).start()
+            buildIWG()
+            iwg.to_csv("output.txt", header=False, index=False)
+            broadcastUDP("output.txt", -1)
+        elif args.emulate_realtime == True:
+            buildIWG()
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            iwg.to_csv("output.txt", header=False, index=False)
+            with open("output.txt", "r") as udp_packet:
+                lines = udp_packet.readlines()
+                while len(lines) != 0:
+                    MESSAGE = str(lines[0])
+                    message = MESSAGE.translate(None, "[]'")
+                    message = message.rstrip()
+                    print(message)
+                    sock.sendto(message, ('', UDP_PORT))
+                    lines.remove(lines[0])
+                    time.sleep(float(interval))
     else:
         threading.Timer(float(interval), main).start()
         buildIWG()
