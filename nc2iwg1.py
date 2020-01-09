@@ -3,11 +3,8 @@
 #######################################################################
 # Produce IWG1 packets from a netCDF file. If variable is missing from
 # netCDF file, maintain blank entries to keep IWG1 structure.
-# Arguments for input file (nc), output file (optional), conversion interval 
-# in sec (optional) and UDP broadcast IP address (optional).
-# Variable UDP_OUT should be set to True if IWG1 data should be sent
-# Port is set to 7071
-# Copyright UCAR 
+#
+# Copyright University Corporation for Atmospheric Research, 2020 
 #######################################################################
 
 import netCDF4
