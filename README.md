@@ -3,29 +3,30 @@
 
 Original script was written in C++.
 
-The script takes five arguments. 
+The script can take up to six arguments. 
 
-The first (-i) is the input netCDF file containing the variables that you wish to extract and either write to standard out, broadcast via UDP, or write to the IWG1 file.
+The first (-i) is the input netCDF file containing the variables that you wish to extract and either write to standard out, broadcast via UDP, or write to the IWG1 file. This is a required argument.
 
-The second (-o) is an output file in the iwg1 file format. This is optional. 
+The second (-o) is an output file in the iwg1 file format. This is optional. If no argument is provided, the script continues to run without a user defined output file.
 
 The third (-s) is the frequency at which the user would like the conversion to take place. This should be an integer representing the number of seconds. This is optional and if not provided, the program will execute the conversion at 1 second intervals.
 
-The fourth (-u) is optional and should be set to True if you would like the data to be broadcast via UDP. If not provided, then the script will not broadcast.
+The fourth (-u) is optional and should be set to True if you would like the data to be broadcast via UDP. If not provided, then the script will not broadcast vi UDP.
 
 The fifth (-v) is optional and allows users to select additional variables beyond the standard IWG1 list. These variables should be included in a text file in a single row delimited by a single space. See example below:
 
-The sixth (-re) is optional and allows users to have a realtime emulator, so that if you have a full file, you start with the first line and then move through the following lines. 
+The sixth (-re) is optional and allows users to have a realtime emulator for complete netCDF files after a given flight is complete. This is intended to be used for testing purposes to mimic the functionality of the script while a flight is in progress. 
 
 ## Argument Format:
-./nc2iwg1 -i <input_file> -o <output_file>
+./nc2iwg1.py -i <input_file> -o <output_file>
 
-./nc2iwg1 -i <input_file> 
+./nc2iwg1.py -i <input_file> 
 
-./nc2iwg1 -i <input_file> -s <interval> -u <True>
+./nc2iwg1.py -i <input_file> -s <interval> -u <True>
 
-./nc2iwg1 -i <input_file> -o <output_file> -v <extra_variables.txt>
+./nc2iwg1.py -i <input_file> -o <output_file> -v <extra_variables.txt>
 
+./nc2iwg1.py -i <input_file> -s <interval> -u <True> -re <True>
 
 ## Practical Examples:
 ### UDP Brodcast
