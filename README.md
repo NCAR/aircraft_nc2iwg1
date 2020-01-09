@@ -18,15 +18,15 @@ The fifth (-v) is optional and allows users to select additional variables beyon
 The sixth (-re) is optional and allows users to have a realtime emulator for complete netCDF files after a given flight is complete. This is intended to be used for testing purposes to mimic the functionality of the script while a flight is in progress. 
 
 ## Argument Format:
-./nc2iwg1.py -i <input_file> -o <output_file>
+./nc2iwg1.py -i input_file -o output_file
 
-./nc2iwg1.py -i <input_file> 
+./nc2iwg1.py -i input_file 
 
-./nc2iwg1.py -i <input_file> -s <interval> -u <True>
+./nc2iwg1.py -i input_file -s interval -u True
 
-./nc2iwg1.py -i <input_file> -o <output_file> -v <extra_variables.txt>
+./nc2iwg1.py -i input_file -o output_file -v extra_variables.txt
 
-./nc2iwg1.py -i <input_file> -s <interval> -u <True> -re <True>
+./nc2iwg1.py -i input_file -s interval -u True -re True
 
 ## Practical Examples:
 ### UDP Brodcast
