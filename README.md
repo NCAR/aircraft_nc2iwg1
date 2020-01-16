@@ -15,7 +15,7 @@ The fourth (-u) is optional and should be set to True if you would like the data
 
 The fifth (-v) is optional and allows users to select additional variables beyond the standard IWG1 list. These variables should be included in a text file in a single row delimited by a single space. See example below:
 
-The sixth (-re) is optional and allows users to have a realtime emulator for complete netCDF files after a given flight is complete. This is intended to be used for testing purposes to mimic the functionality of the script while a flight is in progress. 
+The sixth (-er) is optional and allows users to have a realtime emulator for complete netCDF files after a given flight is complete. This is intended to be used for testing purposes to mimic the functionality of the script while a flight is in progress. 
 
 ## Argument Format:
 ./nc2iwg1.py -i input_file -o output_file
