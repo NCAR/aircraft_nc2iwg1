@@ -66,6 +66,9 @@ def extractVar(element, input_file):
     if element in input_file.keys():
         output = input_file[element][:]
         return output
+    elif element not in input_file.keys():
+        output = pd.DataFrame(columns=[element])
+        return output
     else:
         pass
 
