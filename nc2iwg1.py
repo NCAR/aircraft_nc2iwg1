@@ -1,9 +1,11 @@
-#! /usr/bin/python
+#!/opt/local/anaconda3/bin/python3.7
 
 #######################################################################
 # Produce IWG1 packets from a netCDF file. If variable is missing from
 # netCDF file, maintain blank entries to keep IWG1 structure.
 #
+# Written in Python 3
+
 # Copyright University Corporation for Atmospheric Research, 2020 
 #######################################################################
 
@@ -15,6 +17,7 @@ import threading
 import socket
 import argparse
 import time
+import io
 
 # get arguments from command line
 parser = argparse.ArgumentParser()
@@ -34,6 +37,7 @@ elif args.UDP == False and args.emulate_realtime == True:
     sys.exit("You have UDP output set to False and emulate realtime set to True.")
 else:
     pass
+
 # default interval to 1 second but use argument if provided
 input_file = args.input_file
 if args.interval is not None:
@@ -50,63 +54,79 @@ if args.UDP == True:
 else:
     UDP_OUT = False
 
-# read the input file to convert
-nc = netCDF4.Dataset(input_file, mode='r')
-iwg1_vars_list = ["GGLAT", "GGLON", "GGALT", "NAVAIL", "PALTF", \
-                  "HGM232", "GSF", "TASX", "IAS", "MACH_A", "VSPD", \
-                  "THDG", "TKAT", "DRFTA", "PITCH", "ROLL", "SSLIP", \
-                  "ATTACK", "ATX", "DPXC", "TTX", "PSXC", "QCXC", \
-                  "PCAB", "WSC", "WDC", "WIC", "SOLZE", "Solar_El_AC", \
-		  "SOLAZ", "Sun_Az_AC"]
-
-#######################################################################
-# define function to extract vars from the netCDF file
-#######################################################################
-def extractVar(element, input_file):
-    if element in input_file.keys():
-        output = input_file[element][:]
-        return output
-    elif element not in input_file.keys():
-        output = pd.DataFrame(columns=[element])
-        return output
-    else:
-        pass
-
 #######################################################################
 # define function to convert data to IWG1 format
 #######################################################################
 def buildIWG():
+# read the input file to convert
+    nc = netCDF4.Dataset(input_file, mode='r')
+    iwg1_vars_list = ["GGLAT", "GGLON", "GGALT", "NAVAIL", "PALTF", \
+                  "HGM232", "GSF", "TASX", "IAS", "MACH_A", "VSPD", \
+                  "THDG", "TKAT", "DRFTA", "PITCH", "ROLL", "SSLIP", \
+                  "ATTACK", "ATX", "DPXC", "TTX", "PSXC", "QCXC", \
+                  "PCAB", "WSC", "WDC", "WIC", "SOLZE", "Solar_El_AC", \
+                  "SOLAZ", "Sun_Az_AC"]
+
     # extract the time variable from the netCDF file
+    df = {}
     TIME = nc.variables["Time"]
     dtime = netCDF4.num2date(TIME[:],TIME.units)
     dtime = pd.Series(dtime).astype(str)
     dtime = dtime.str.replace(":", "")
     dtime = dtime.str.replace("-", "")
     dtime = dtime.str.replace(" ", "T")
+    if args.output_file is None and args.UDP is None and args.emulate_realtime is None:
+        dtime = dtime[-1:]    
 
-    df = {}
-    for i in iwg1_vars_list:
-        try:
-            output = extractVar(i, nc.variables)
+        for i in iwg1_vars_list:
+            try:
+                if i in list(nc.variables.keys()):
+                    output = nc.variables[i][-1:]
+                elif i not in list(nc.variables.keys()):
+                    output = pd.DataFrame(columns=[i])[-1:]
+                else:
+                    pass
+
+            except:
+                print(("Error in extracting variable "+i+" in "+input_file))
+
             df[i] = pd.DataFrame(output)
-        except:
-            print("Error in extracting variable "+i+" in "+input_file)
+    else:
+        dtime = dtime[:]
+
+        for i in iwg1_vars_list:
+            try:
+                if i in list(nc.variables.keys()):
+                    output = nc.variables[i][:]
+                elif i not in list(nc.variables.keys()):
+                    output = pd.DataFrame(columns=[i])[:]
+                else:
+                    pass
+
+            except:
+                print(("Error in extracting variable "+i+" in "+input_file))
+
+            df[i] = pd.DataFrame(output)  
 
     global iwg
-    iwg = pd.concat([df["GGLAT"], df["GGLON"], df["GGALT"], df["NAVAIL"], df["PALTF"], \
+    iwg = pd.concat([dtime, df["GGLAT"], df["GGLON"], df["GGALT"], df["NAVAIL"], df["PALTF"], \
            df["HGM232"], df["GSF"], df["TASX"], df["IAS"], df["MACH_A"], \
            df["VSPD"], df["THDG"], df["TKAT"], df["DRFTA"], df["PITCH"], \
            df["ROLL"], df["SSLIP"], df["ATTACK"], df["ATX"], df["DPXC"], \
            df["TTX"], df["PSXC"], df["QCXC"], df["PCAB"], df["WSC"], \
            df["WDC"], df["WIC"], df["SOLZE"], df["Solar_El_AC"], df["SOLAZ"], \
-           df["Sun_Az_AC"]], axis=1, ignore_index=False)
+           df["Sun_Az_AC"]], axis=1, ignore_index=True)
 
-    iwg = pd.concat([dtime, iwg], axis=1, ignore_index=False)
     iwg.insert(loc=0, column='IWG1', value='IWG1')
+
+    if args.output_file is None and args.UDP is None and args.emulate_realtime is None:
+        iwg[0] = iwg[0].shift(-1)
+    else:
+        pass
 
     if args.extravars is not None:
         with open(args.extravars) as file:
-            print file
+            print(file)
             for line in file:
                 additional_vars_list = line.split()
                 print(additional_vars_list)
@@ -117,6 +137,7 @@ def buildIWG():
                 extravars[i] = pd.DataFrame(extra_output)
             except:
                 print("Additional variables expected, but error in extraction.")
+
         extravars=pd.concat(extravars, axis=1, ignore_index=False)
         iwg = pd.concat([iwg, extravars], axis=1, ignore_index=False)
 
@@ -134,12 +155,12 @@ def broadcastUDP(output, count):
     if UDP_OUT == True:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        with open(output, "r") as udp_packet:
+        with io.open(output, "r") as udp_packet:
             MESSAGE = str(udp_packet.readlines()[count])
-            message = MESSAGE.translate(None, "[]'")
+            message = MESSAGE.translate("[]'")
             message = message.rstrip()
             print(message)
-            sock.sendto(message, ('', UDP_PORT))
+            sock.sendto(message.encode(), ('', UDP_PORT))
     else:
         pass
 
@@ -161,23 +182,23 @@ def main():
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             iwg.to_csv("output.txt", header=False, index=False)
-            with open("output.txt", "r") as udp_packet:
-                lines = udp_packet.readlines()
+            with io.open("output.txt", "r") as udp_packet:
+                lines = udp_packet.readlines()[-1]
                 while len(lines) != 0:
                     MESSAGE = str(lines[0])
-                    message = MESSAGE.translate(None, "[]'")
+                    message = MESSAGE.translate("[]'")
                     message = message.rstrip()
                     print(message)
-                    sock.sendto(message, ('', UDP_PORT))
+                    sock.sendto(message.encode(), ('', UDP_PORT))
                     lines.remove(lines[0])
                     time.sleep(float(interval))
     else:
         threading.Timer(float(interval), main).start()
         buildIWG()
         iwg.to_csv("output.txt", header=False, index=False)
-        with open("output.txt", "r") as stdout:
-            stdout = str(stdout.readlines()[-1])
-            stdout = stdout.translate(None, "[]'")
+        with io.open("output.txt", "r") as stdout:
+            stdout = str(stdout.readlines()[0])
+            stdout = stdout.translate("[]'")
             stdout = stdout.rstrip()
             print(stdout)
 #######################################################################
