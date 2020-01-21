@@ -148,22 +148,6 @@ def buildIWG():
     iwg = iwg.astype(str)
     return iwg
 
-#######################################################################
-# define UDP broadcast function
-######################################################################
-#def broadcastUDP(output, count):
-#   if UDP_OUT == True:
-#        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-#        with io.open(output, "r") as udp_packet:
-#            MESSAGE = str(udp_packet.readlines()[count])
-#            message = MESSAGE.translate("[]'")
-#            message = message.rstrip()
-#            print(message)
-#            sock.sendto(message.encode(), ('', UDP_PORT))
-#    else:
-#        pass
-
 ######################################################################
 # define main function
 #######################################################################
@@ -194,7 +178,7 @@ def main():
                     message = message.rstrip()
                     print(message)
                     sock.sendto(message.encode(), ('', UDP_PORT))
-                    #lines.remove(lines[0])
+                    lines.pop(0)
                     time.sleep(float(interval))
     else:
         iwg.to_csv("output.txt", header=False, index=False)
