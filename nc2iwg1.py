@@ -76,14 +76,14 @@ def buildIWG():
     dtime = dtime.str.replace("-", "")
     dtime = dtime.str.replace(" ", "T")
     if args.output_file is None and args.UDP is None and args.emulate_realtime is None:
-        dtime = dtime[-1:]    
+        dtime = dtime.iloc[-1:]    
 
         for i in iwg1_vars_list:
             try:
                 if i in list(nc.variables.keys()):
-                    output = nc.variables[i][-1:]
+                    output = nc.variables[i].iloc[-1:]
                 elif i not in list(nc.variables.keys()):
-                    output = pd.DataFrame(columns=[i])[-1:]
+                    output = pd.DataFrame(columns=[i]).iloc[-1:]
                 else:
                     pass
 
@@ -151,56 +151,61 @@ def buildIWG():
 #######################################################################
 # define UDP broadcast function
 ######################################################################
-def broadcastUDP(output, count):
-    if UDP_OUT == True:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        with io.open(output, "r") as udp_packet:
-            MESSAGE = str(udp_packet.readlines()[count])
-            message = MESSAGE.translate("[]'")
-            message = message.rstrip()
-            print(message)
-            sock.sendto(message.encode(), ('', UDP_PORT))
-    else:
-        pass
+#def broadcastUDP(output, count):
+#   if UDP_OUT == True:
+#        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+#        with io.open(output, "r") as udp_packet:
+#            MESSAGE = str(udp_packet.readlines()[count])
+#            message = MESSAGE.translate("[]'")
+#            message = message.rstrip()
+#            print(message)
+#            sock.sendto(message.encode(), ('', UDP_PORT))
+#    else:
+#        pass
 
 ######################################################################
 # define main function
 #######################################################################
 def main():
+    buildIWG()
     if args.output_file is not None:
-        buildIWG()        
         iwg.to_csv(args.output_file, header=False, index=False)
     elif args.UDP == True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        iwg.to_csv("output.txt", header=False, index=False)
         if args.emulate_realtime == False:
-            threading.Timer(float(interval), main).start()
-            buildIWG()
-            iwg.to_csv("output.txt", header=False, index=False)
-            broadcastUDP("output.txt", -1)
-        elif args.emulate_realtime == True:
-            buildIWG()
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            iwg.to_csv("output.txt", header=False, index=False)
             with io.open("output.txt", "r") as udp_packet:
                 lines = udp_packet.readlines()[-1]
                 while len(lines) != 0:
-                    MESSAGE = str(lines[0])
+                    MESSAGE = str(lines)
                     message = MESSAGE.translate("[]'")
                     message = message.rstrip()
                     print(message)
                     sock.sendto(message.encode(), ('', UDP_PORT))
-                    lines.remove(lines[0])
+                    time.sleep(float(interval))
+        elif args.emulate_realtime == True:
+            with io.open("output.txt", "r") as udp_packet:
+                lines = udp_packet.readlines()
+                while len(lines) != 0:
+                    MESSAGE = lines[0]
+                    message = MESSAGE.translate("[]'")
+                    message = message.rstrip()
+                    print(message)
+                    sock.sendto(message.encode(), ('', UDP_PORT))
+                    #lines.remove(lines[0])
                     time.sleep(float(interval))
     else:
-        threading.Timer(float(interval), main).start()
-        buildIWG()
         iwg.to_csv("output.txt", header=False, index=False)
-        with io.open("output.txt", "r") as stdout:
-            stdout = str(stdout.readlines()[0])
-            stdout = stdout.translate("[]'")
-            stdout = stdout.rstrip()
-            print(stdout)
+        with io.open("output.txt", "r") as udp_packet:
+            lines = udp_packet.readlines()[-1]
+            while len(lines) != 0:
+                MESSAGE = str(lines)
+                message = MESSAGE.translate("[]'")
+                message = message.rstrip()
+                print(message)
+                time.sleep(float(interval))
 #######################################################################
 # main
 #######################################################################
