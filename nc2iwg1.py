@@ -166,7 +166,7 @@ def main():
                     message = MESSAGE.translate("[]'")
                     message = message.rstrip()
                     print(message)
-                    sock.sendto(message.encode(), ('', UDP_PORT))
+                    sock.sendto(message.encode(), ('127.0.0.1', UDP_PORT))
                     time.sleep(float(interval))
         elif args.emulate_realtime == True:
             with io.open("output.txt", "r") as udp_packet:
@@ -176,7 +176,7 @@ def main():
                     message = MESSAGE.translate("[]'")
                     message = message.rstrip()
                     print(message)
-                    sock.sendto(message.encode(), ('', UDP_PORT))
+                    sock.sendto(message.encode(), ('127.0.0.1', UDP_PORT))
                     lines.pop(0)
                     time.sleep(float(interval))
     else:
