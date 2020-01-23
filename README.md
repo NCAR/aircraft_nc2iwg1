@@ -62,11 +62,13 @@ download win 64 bit installer for python3.7 and install
 Windows search -> type "env" -> click "Edit the system environment variables"
 In lower "System variables" window, click the "Path" row and click edit
 Click "New" and add the new paths, e.g.
-C:\Users\lroot\Miniconda3
-C:\Users\lroot\Miniconda3\condabin
+    C:\Users\lroot\Miniconda3
+    C:\Users\lroot\Miniconda3\condabin
 Activate a conda environment (I used the default base environment) - see - https://conda.io/activation
-   > conda activate
+
+    conda activate
+
 Update conda if warned following instructions
 
-conda install -c conda-forge pandas
-conda install -c conda-forge netcdf4
+    conda install -c conda-forge pandas
+    conda install -c conda-forge netcdf4
