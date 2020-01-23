@@ -53,4 +53,20 @@ yum install pandas-python
 yum install netCDF4-python
 
 ### Windows
-(not sure yet)
+download zip: https://github.com/NCAR/aircraft_nc2iwg1
+Use miniconda to install all needed packages:
+
+https://docs.conda.io/en/latest/miniconda.html
+download win 64 bit installer for python3.7 and install
+(Optional) Add Miniconda3 and Miniconda3\condabin to your path
+Windows search -> type "env" -> click "Edit the system environment variables"
+In lower "System variables" window, click the "Path" row and click edit
+Click "New" and add the new paths, e.g.
+C:\Users\lroot\Miniconda3
+C:\Users\lroot\Miniconda3\condabin
+Activate a conda environment (I used the default base environment) - see - https://conda.io/activation
+   > conda activate
+Update conda if warned following instructions
+
+conda install -c conda-forge pandas
+conda install -c conda-forge netcdf4
