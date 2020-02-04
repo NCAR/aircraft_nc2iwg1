@@ -22,7 +22,7 @@ import io
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input_file", help="netCDF file to convert", required=True)
 parser.add_argument("-o", "--output_file", help="Optional IWG1 format converted output file")
-parser.add_argument("-s", "--interval", help="Optional conversion interval seconds")
+parser.add_argument("-d", "--delay", help="Optional conversion interval delay in microseconds")
 parser.add_argument("-u", "--UDP", type=bool, const=True, nargs="?", default=False, help="UDP broadcasting, set to True")
 parser.add_argument("-v", "--extravars", help="file containing comma separated list of vars")
 parser.add_argument("-er", "--emulate_realtime", type=bool, const=True, nargs="?", default=False, help="Emulate realtime mode, set to True") 
@@ -39,8 +39,8 @@ else:
 
 # default interval to 1 second but use argument if provided
 input_file = args.input_file
-if args.interval is not None:
-    interval = args.interval
+if args.delay is not None:
+    interval = args.delay/1000000.
 else:
     interval = 1
 
