@@ -1,3 +1,4 @@
+#!/opt/local/anaconda3/bin/python3.7
 
 #######################################################################
 # Produce IWG1 packets from a netCDF file. If variable is missing from
@@ -17,13 +18,16 @@ import socket
 import argparse
 import time
 import io
+import os
 
 # get arguments from command line
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input_file", help="netCDF file to convert", required=True)
+parser.add_argument("input_file", help="netCDF file to convert")
 parser.add_argument("-o", "--output_file", help="Optional IWG1 format converted output file")
 parser.add_argument("-d", "--delay", help="Optional conversion interval delay in microseconds")
-parser.add_argument("-u", "--UDP", type=bool, const=True, nargs="?", default=False, help="UDP broadcasting, set to True")
+parser.add_argument("-u", dest="UDP", action="store_true")
+parser.set_defaults(feature=False)
+#parser.add_argument("-u", "--UDP", type=bool, const=True, nargs="?", default=False, help="UDP broadcasting, set to True")
 parser.add_argument("-v", "--extravars", help="file containing comma separated list of vars")
 parser.add_argument("-er", "--emulate_realtime", type=bool, const=True, nargs="?", default=False, help="Emulate realtime mode, set to True") 
 args = parser.parse_args()
@@ -40,7 +44,7 @@ else:
 # default interval to 1 second but use argument if provided
 input_file = args.input_file
 if args.delay is not None:
-    interval = args.delay/1000000.
+    interval = float(args.delay)/1000000.
 else:
     interval = 1
 
@@ -180,15 +184,16 @@ def main():
                     lines.pop(0)
                     time.sleep(float(interval))
     else:
-        iwg.to_csv("output.txt", header=False, index=False)
-        with io.open("output.txt", "r") as udp_packet:
-            lines = udp_packet.readlines()[-1]
-            while len(lines) != 0:
-                MESSAGE = str(lines)
-                message = MESSAGE.translate("[]'")
-                message = message.rstrip()
-                print(message)
-                time.sleep(float(interval))
+        input_path = os.path.splitext(input_file)
+        iwg.to_csv(input_path[0]+".iwg1", header=False, index=False)
+#        with io.open("output.txt", "r") as udp_packet:
+#            lines = udp_packet.readlines()[-1]
+#            while len(lines) != 0:
+#                MESSAGE = str(lines)
+#                message = MESSAGE.translate("[]'")
+#                message = message.rstrip()
+#                print(message)
+#                time.sleep(float(interval))
 #######################################################################
 # main
 #######################################################################
