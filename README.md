@@ -1,7 +1,5 @@
 # nc2iwg1
-# Python port of aircraft_nc_utils
-
-Original script was written in C++.
+## Python port of aircraft_nc_utils nc2iwg1
 
 ## Arguments
 
@@ -25,19 +23,21 @@ OPTIONAL: The seventh (-so) is standard out and should be included with the firs
 
 ### Argument Format Examples
 
-'''./nc2iwg1.py input_file'''
+```
+./nc2iwg1.py input_file
 
-'''./nc2iwg1.py input_file -o output_file'''
+./nc2iwg1.py input_file -o output_file
 
-'''./nc2iwg1.py input_file -d interval'''
+./nc2iwg1.py input_file -d interval
 
-'''./nc2iwg1.py input_file -u True''' 
+./nc2iwg1.py input_file -u True
 
-'''./nc2iwg1.py input_file -v extravarsfile.txt'''
+./nc2iwg1.py input_file -v extravarsfile.txt
 
-'''./nc2iwg1.py input_file -er True'''
+./nc2iwg1.py input_file -er True
 
-'''./nc2iwg1.py input_file -so True'''
+./nc2iwg1.py input_file -so True
+```
 
 ## Practical Examples:
 
@@ -53,16 +53,16 @@ AT_A ATH1 ATH2
 ## Installation Requirements
 ### MacOS
 download zip: https://github.com/NCAR/aircraft_nc2iwg1
-'''
+```
     pip install pandas
     pip install netCDF4
-'''
+```
 ### Linux
 download zip: https://github.com/NCAR/aircraft_nc2iwg1
-'''
+```
     yum install pandas-python
     yum install netCDF4-python
-'''
+```
 ### Windows
 download zip: https://github.com/NCAR/aircraft_nc2iwg1
 Use miniconda to install all needed packages:
@@ -81,11 +81,11 @@ Click "New" and add the new paths, e.g.
     C:\Users\lroot\Miniconda3
     C:\Users\lroot\Miniconda3\condabin
 Activate a conda environment (I used the default base environment) - see - https://conda.io/activation
-'''
+```
     conda activate
-'''
+```
 Update conda if warned following instructions
-'''
+```
     conda install -c conda-forge pandas
     conda install -c conda-forge netcdf4
-'''
+```
