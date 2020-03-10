@@ -28,8 +28,11 @@ parser.add_argument("-d", "--delay", help="Optional conversion interval delay in
 parser.add_argument("-u", "--UDP", type=bool, const=True, nargs="?", default=False, help="UDP")
 parser.set_defaults(feature=False)
 parser.add_argument("-v", "--extravars", help="file containing comma separated list of vars")
-parser.add_argument("-er", "--emulate_realtime", type=bool, const=True, nargs="?", default=False, help="Emulate realtime mode, set to True") 
-parser.add_argument("-so", "--standard_out", type=bool, const=True, nargs="?", default=False, help="Optional argument for standard out. If you don't provide, file writes to output file, and that's it.")
+parser.add_argument("-er", "--emulate_realtime", type=bool, const=True, nargs="?",\
+                    default=False, help="Emulate realtime mode, set to True") 
+parser.add_argument("-so", "--standard_out", type=bool, const=True, nargs="?",\
+                    default=False, help="Optional argument for standard out. \
+                    If you don't provide, file writes to output file, and that's it.")
 args = parser.parse_args()
 
 if args.output_file is not None and args.UDP == True:
