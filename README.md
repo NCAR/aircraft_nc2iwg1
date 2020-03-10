@@ -11,7 +11,7 @@ REQUIRED: The first is the input netCDF file containing the variables that you w
 
 OPTIONAL: The second (-o) is an output filename in the iwg1 file format. This is optional. If no argument is provided, the script continues to run without a user defined output filename, defaulting to the input filename with extension ".iwg1". (e.g. if input file is SOCRATESrf01.nc, the output filename with no option included will be SOCRATESrf01.iwg1)
 
-OPTIONAL: The third (-d) is the frequency at which the user would like the conversion to take place. This should be an integer representing the number of microseconds. This is optional and if not provided, the program will execute the conversion at 1 second (1000000 microseconds) intervals. It seems odd to have the units associated with the delay in unit microseconds, but the legacy C++ script had this, so this is being carried forward so anyone using this new Python script won't immediately find things broken. 
+OPTIONAL: The third (-d) is the delay interval at which the user would like the conversion to take place. This should be an integer representing the number of microseconds. This is optional and if not provided, the program will execute the conversion at 1 second (1000000 microseconds) intervals. It seems odd to have the units associated with the delay in unit microseconds, but the legacy C++ script had this, so this is being carried forward so anyone using this new Python script won't immediately break things. 
 
 OPTIONAL: The fourth (-u) should be included if you would like the data to be broadcast via UDP. If not provided, then the script will not broadcast via UDP. The script assigns the variable 'UDP_PORT' = 7071 and assigns the variable 'UDP_IP' automatically. If you want to change either of these variables, you must edit the variables manually in the script.
 
@@ -39,16 +39,13 @@ OPTIONAL: The seventh (-so) is standard out and should be included with the firs
 ./nc2iwg1.py input_file -so True
 ```
 
-## Practical Examples:
-
 ### Format of text file with extra variables to include in the IWG1 packet
 Example contents of extra_variables.txt:
-'''
+```
 AT_A ATH1 ATH2
-''' 
+``` 
 
 ### Note: there are no restrictions on the number of additional variables or the name of the extra variables text file
-
 
 ## Installation Requirements
 ### MacOS
